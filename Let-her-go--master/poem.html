@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Poem Envelope</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      width: 100%;
+      background: linear-gradient(135deg, #e0f7f5, #d6f5ec, #f0fffb);
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .envelop {
+      width: 25rem;
+      height: 20rem;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: auto;
+      margin-top: 10rem;
+    }
+    .envelop__front-paper {
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      border-radius: 1rem;
+      border: 0.25rem solid #ff6f91;
+      background: linear-gradient(145deg, #ffd1dc, #ffb6c1);
+      clip-path: polygon(100% 0%, 50% 70%, 0% 0%, 0% 100%, 100% 100%);
+      box-shadow: 0px 6px 15px rgba(0,0,0,0.25);
+      z-index: 300;
+    }
+    .envelop__back-paper {
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      border-radius: 1rem;
+      background: linear-gradient(145deg, #ffb6c1, #ff8fa3);
+      clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 0% 90%);
+      box-shadow: inset 0px 4px 8px rgba(0,0,0,0.15);
+      z-index: 100;
+    }
+    .envelop__up-paper {
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      position: relative;
+      border-radius: 1rem;
+      background: linear-gradient(180deg, #ff8fa3, #ff6f91);
+      z-index: 400;
+      clip-path: polygon(0% 0%, 100% 0%, 50% 81%);
+      box-shadow: 0px 5px 12px rgba(0,0,0,0.3);
+    }
+    .envelop__sticker {
+      width: 100%;
+      height: 20%;
+      position: absolute;
+      margin: auto;
+      top: 30%;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 400;
+      background-image: url("https://www.freepnglogos.com/uploads/heart-png/emoji-heart-33.png");
+      background-color: #f9f9f9;
+      border: 0.3rem solid #e2e2e2;
+      background-size: 2rem;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .envelop__false-sticker {
+      width: 20%;
+      height: 20%;
+      position: absolute;
+      margin: auto;
+      top: 30%;
+      left: 80%;
+      bottom: 0;
+      right: 0;
+      z-index: 300;
+      background-image: url("https://www.freepnglogos.com/uploads/heart-png/emoji-heart-33.png");
+      background-color: #f9f9f9;
+      border: 0.3rem solid #e2e2e2;
+      background-size: 2rem;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .envelop__content {
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      z-index: 200;
+    }
+    .love-notes {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .note {
+      width: 95%;
+      height: 30%;
+      background-color: #f9f9f9;
+      position: absolute;
+      overflow: hidden;
+      transition: height 0.5s, opacity 0.25s;
+      box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+    }
+    .note:nth-child(1) { bottom: 60%; }
+    .note:nth-child(2) { bottom: 40%; }
+    .note:nth-child(3) { bottom: 20%; }
+    .note:hover { cursor: pointer; height: 45%; }
+    .note__text {
+      font-family: "Sofia", cursive;
+      padding: 1rem;
+    }
+    .note__text p {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: #000;
+    }
+    .cursor { cursor: pointer; }
+
+    /* Petals container */
+    .petals {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .petal {
+      position: absolute;
+      top: -10vh;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+      opacity: 0.95;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    .petal svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+      40% { transform: translateY(35vh) translateX(var(--tx)) rotate(calc(var(--rot) / 2)); opacity: 0.98; }
+      75% { transform: translateY(80vh) translateX(calc(var(--tx) * -0.5)) rotate(calc(var(--rot) * 0.75)); opacity: 0.9; }
+      100% { transform: translateY(110vh) translateX(calc(var(--tx) * -1)) rotate(var(--rot)); opacity: 0.85; }
+    }
+
+    .heading {
+      position: absolute;
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: "Sofia", cursive;
+      font-size: 2.2rem;
+      color: #ff6f91;
+      text-align: center;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #ff8fa3, #ff6f91, #ffb6c1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Password input (hidden by default) */
+    .password-container {
+      position: absolute;
+      top: calc(85% + 1rem);
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      z-index: 1200;
+    }
+    .password-input {
+      padding: 0.8rem 1.2rem;
+      border: 2px solid #ff6f91;
+      border-radius: 25px;
+      font-size: 1rem;
+      outline: none;
+      font-family: "Sofia", cursive;
+      text-align: center;
+      background: #fff0f5;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+      transition: 0.3s ease;
+    }
+    .password-input:focus {
+      border-color: #ff8fa3;
+      box-shadow: 0px 6px 14px rgba(255,111,145,0.4);
+    }
+
+    /* Balloon beside heading */
+    .balloon {
+      position: absolute;
+      top: 5%;
+      left: calc(70% + 250px);
+      font-size: 2.5rem;
+      cursor: pointer;
+      animation: float 3s ease-in-out infinite;
+      user-select: none;
+      z-index: 1500;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <h1 class="heading">🌸 With Love, Just for You 🌸</h1>
+  <div class="balloon" id="balloon">❤️</div>
+
+  <!-- Password input -->
+  <div class="password-container" id="passwordBox" style="display: none;">
+    <form id="passwordForm">
+    <input type="password" placeholder="Enter Password 💌" class="password-input" />
+    </form>
+  </div>
+
+  <div class="petals"></div>
+
+  <div class="envelop">
+    <div class="envelop__front-paper"></div>
+    <div class="envelop__back-paper"></div>
+    <div class="envelop__up-paper js-up-paper"></div>
+    <div class="envelop__sticker js-sticker"></div>
+    <div class="envelop__false-sticker"></div>
+    <div class="envelop__content js-envelop-content">
+      <div class="love-notes">
+        <div class="note js-note">
+          <div class="note__text">
+            <p>🌷 "In the quiet of the morning,</p>
+            <p>Your smile is my sunrise,</p>
+            <p>A gentle warmth that lingers,</p>
+            <p>Painting love across my skies." 🌷</p>
+          </div>
+        </div>
+        <div class="note js-note">
+          <div class="note__text">
+            <p>💖 "Every heartbeat whispers softly,</p>
+            <p>Your name in tender rhyme,</p>
+            <p>With you, each fleeting moment</p>
+            <p>Becomes a poem, frozen in time." 💖</p>
+          </div>
+        </div>
+        <div class="note js-note">
+          <div class="note__text">
+            <p>✨ "If stars could tell our story,</p>
+            <p>They’d sparkle endlessly,</p>
+            <p>For love like ours is timeless,</p>
+            <p>A forever destiny." ✨</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let mobile_media_query = window.matchMedia("(max-width: 400px)");
+    let tablet_media_query = window.matchMedia("(min-width: 400px) and (max-width: 600px)");
+    const notes = document.querySelectorAll(".js-note");
+
+    function recize_notes() {
+      for (let i = 0; i < notes.length; i++) {
+        if (notes[i].classList.contains("active")) {
+          notes[i].classList.remove("active");
+          gsap.set(notes[i], { height: "30%", clearProps: "all" });
+        }
+      }
+    }
+
+    const flowerSVG = `
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g transform="translate(50,50)">
+        <ellipse rx="20" ry="10" fill="#ffd6e0" stroke="#ff8fa3" stroke-width="2" transform="rotate(0)"/>
+        <ellipse rx="20" ry="10" fill="#ffd6e0" stroke="#ff8fa3" stroke-width="2" transform="rotate(72)"/>
+        <ellipse rx="20" ry="10" fill="#ffd6e0" stroke="#ff8fa3" stroke-width="2" transform="rotate(144)"/>
+        <ellipse rx="20" ry="10" fill="#ffd6e0" stroke="#ff8fa3" stroke-width="2" transform="rotate(216)"/>
+        <ellipse rx="20" ry="10" fill="#ffd6e0" stroke="#ff8fa3" stroke-width="2" transform="rotate(288)"/>
+        <circle r="6" fill="#ff6f91" />
+      </g>
+    </svg>`;
+
+    /* Generate petals */
+    const petalsContainer = document.querySelector('.petals');
+    const PETAL_COUNT = 18;
+    for (let i = 0; i < PETAL_COUNT; i++) {
+      const el = document.createElement('div');
+      el.className = 'petal';
+      el.innerHTML = flowerSVG;
+
+      const left = Math.random() * 100;
+      el.style.left = left + 'vw';
+
+      const size = Math.round(18 + Math.random() * 44);
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+
+      const tx = Math.round((Math.random() * 160) - 80);
+      el.style.setProperty('--tx', tx + 'px');
+
+      const rot = Math.round(180 + Math.random() * 720);
+      el.style.setProperty('--rot', rot + 'deg');
+
+      const duration = (8 + Math.random() * 10).toFixed(2);
+      const delay = (Math.random() * -10).toFixed(2);
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay = delay + 's';
+
+      el.style.opacity = (0.85 + Math.random() * 0.15).toFixed(2);
+      petalsContainer.appendChild(el);
+    }
+
+    function notes_ready() {
+      gsap.to(".js-envelop-content", { height: "110%", duration: 0.5 });
+      for (let i = 0; i < notes.length; i++) {
+        notes[i].addEventListener("click", function () {
+          if (this.classList.contains("active")) {
+            this.classList.remove("active");
+            gsap.set(this, { height: "30%", clearProps: "all" });
+          } else {
+            notes.forEach(n => {
+              n.classList.remove("active");
+              gsap.set(n, { height: "30%", clearProps: "all" });
+            });
+            this.classList.add("active");
+            let heightVal = mobile_media_query.matches ? (125 + 40 * i) + "%" :
+                             tablet_media_query.matches ? (80 + 21 * i) + "%" :
+                             (70 + 20 * i) + "%";
+            gsap.set(this, { height: heightVal });
+          }
+        });
+      }
+    }
+
+    function set_up_paper() {
+      gsap.set(".js-up-paper", {
+        bottom: "97%",
+        rotation: 180,
+        zIndex: 200,
+        clipPath: "polygon(0% 0%,100% 0%,50% 61%)",
+        onComplete: notes_ready
+      });
+    }
+
+    function envelop_transition() {
+      gsap.to(".js-up-paper", {
+        bottom: "1%",
+        duration: 0.25,
+        onComplete: set_up_paper
+      });
+      document.querySelector(".js-up-paper").removeEventListener("click", envelop_transition);
+      document.querySelector(".js-up-paper").classList.remove("cursor");
+    }
+
+    function sticker() {
+      gsap.set(".js-sticker", { width: "20%", left: "-80%" });
+      document.body.classList.remove("scissors");
+      document.querySelector(".js-sticker").removeEventListener("click", sticker);
+      document.querySelector(".js-up-paper").addEventListener("click", envelop_transition);
+      document.querySelector(".js-up-paper").classList.add("cursor");
+    }
+
+    document.querySelector(".js-sticker").addEventListener("click", sticker);
+    window.onresize = function () { recize_notes(); };
+
+    /* Balloon toggle password box */
+    const balloon = document.getElementById("balloon");
+    const passwordBox = document.getElementById("passwordBox");
+
+    balloon.addEventListener("click", () => {
+      if (passwordBox.style.display === "none" || passwordBox.style.display === "") {
+        passwordBox.style.display = "block";
+        gsap.from(passwordBox, { opacity: 0, y: -20, duration: 0.5 });
+      } else {
+        gsap.to(passwordBox, { opacity: 0, y: -20, duration: 0.5, onComplete: () => {
+          passwordBox.style.display = "none";
+        }});
+      }
+    });
+
+    const passwordForm = document.getElementById("passwordForm");
+
+passwordForm.addEventListener("submit", function(e) {
+  e.preventDefault(); // prevent default form submission
+  window.location.href = "forever.html"; // redirect to forever.html
+});
+  </script>
+</body>
+</html>
