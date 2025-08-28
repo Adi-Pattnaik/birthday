@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Our Story</title>
+    <link rel="stylesheet" href="./index_files/default.css">
+    <script src="./index_files/jquery.min.js"></script>
+    <script src="./index_files/functions.js" charset="utf-8"></script>
+    <script src="./index_files/love.js" charset="utf-8"></script>
+    <script src="./config.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #ffe6e6, #ffd6e0, #fff0f5);
+            color: #444;
+            overflow-x: hidden;
+        }
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            color: #c62828;
+            letter-spacing: 2px;
+        }
+        header p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-top: .5rem;
+        }
+        #main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1rem;
+        }
+        #wrap {
+            position: relative;
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+        #code {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+            max-width: 650px;
+            margin: 0 auto 20px;
+            display: none;
+        }
+        .say {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .love-btn {
+    margin-top: 30px;
+    padding: 14px 32px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #ff758c, #ff7eb3);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 118, 136, 0.4);
+    transition: all 0.3s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.love-btn:hover {
+    background: linear-gradient(135deg, #ff4e70, #ff6489);
+    transform: scale(1.07);
+    box-shadow: 0 6px 20px rgba(255, 118, 136, 0.6);
+}
+
+
+        .floating-heart {
+            position: fixed;
+            font-size: 20px;
+            animation: float 6s infinite;
+            opacity: 0.6;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .floating-heart.burst {
+            transform: scale(2);
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 0.8; }
+            50% { transform: translateY(-200px) scale(1.2); opacity: 0.4; }
+            100% { transform: translateY(0) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>❤️ Our Story ❤️</h1>
+        <p>A journey of love, trust, and romance</p>
+    </header>
+
+    <div id="main">
+        <div id="wrap">
+            <div id="text">
+                <div id="code"></div>
+            </div>
+            <canvas id="canvas" width="1100" height="680"></canvas>
+        </div>
+    </div>
+
+    <script>
+    // Wait for DOM and jQuery to be ready
+    $(function () {
+        // Fill floating hearts
+        for (let i = 0; i < 15; i++) {
+            let heart = document.createElement("div");
+            heart.className = "floating-heart";
+            heart.innerHTML = "💖";
+            heart.style.left = Math.random() * window.innerWidth + "px";
+            heart.style.top = Math.random() * window.innerHeight + "px";
+            heart.style.animationDelay = (Math.random() * 6) + "s";
+
+            // Add click effect (burst + remove)
+            heart.addEventListener("click", () => {
+                heart.classList.add("burst");
+                setTimeout(() => heart.remove(), 300);
+            });
+
+            document.body.appendChild(heart);
+        }
+
+        // Fill code text
+        if (typeof config !== "undefined" && Array.isArray(config.lines)) {
+            $('#code').html(
+                config.lines.map(item =>
+                    `<span class="say">${item}</span><span class="say"> </span>`
+                ).join('')
+            );
+        }
+
+        // Main animation logic
+        var canvas = $('#canvas');
+        if (!canvas[0].getContext) return false;
+
+        var width = canvas.width();
+        var height = canvas.height();
+        canvas.attr({ width, height });
+
+        var opts = {
+            seed: { x: width / 2 - 20, color: "rgb(190, 26, 37)", scale: 2 },
+            branch: [
+                [535, 680, 570, 250, 500, 200, 30, 100, [
+                    [540, 500, 455, 417, 340, 400, 13, 100, [
+                        [450, 435, 434, 430, 394, 395, 2, 40]
+                    ]],
+                    [550, 445, 600, 356, 680, 345, 12, 100, [
+                        [578, 400, 648, 409, 661, 426, 3, 80]
+                    ]],
+                    [539, 281, 537, 248, 534, 217, 3, 40],
+                    [546, 397, 413, 247, 328, 244, 9, 80, [
+                        [427, 286, 383, 253, 371, 205, 2, 40],
+                        [498, 345, 435, 315, 395, 330, 4, 60]
+                    ]],
+                    [546, 357, 608, 252, 678, 221, 6, 100, [
+                        [590, 293, 646, 277, 648, 271, 2, 80]
+                    ]]
+                ]]
+            ],
+            bloom: { num: 700, width: 1080, height: 650 },
+            footer: { width: 1200, height: 5, speed: 10 }
+        };
+
+        var tree = new Tree(canvas[0], width, height, opts);
+        var seed = tree.seed;
+        var foot = tree.footer;
+        var hold = 1;
+
+        canvas.on("click", function (e) {
+            var offset = canvas.offset();
+            var x = e.pageX - offset.left;
+            var y = e.pageY - offset.top;
+            if (seed.hover(x, y)) {
+                hold = 0;
+                canvas.off("click mousemove").removeClass('hand');
+            }
+        }).on("mousemove", function (e) {
+            var offset = canvas.offset();
+            var x = e.pageX - offset.left;
+            var y = e.pageY - offset.top;
+            canvas.toggleClass('hand', seed.hover(x, y));
+        });
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function seedAnimate() {
+            seed.draw();
+            while (hold) await sleep(10);
+            while (seed.canScale()) {
+                seed.scale(0.95);
+                await sleep(10);
+            }
+            while (seed.canMove()) {
+                seed.move(0, 2);
+                foot.draw();
+                await sleep(10);
+            }
+        }
+
+        async function growAnimate() {
+            do {
+                tree.grow();
+                await sleep(10);
+            } while (tree.canGrow());
+        }
+
+        async function flowAnimate() {
+            do {
+                tree.flower(2);
+                await sleep(10);
+            } while (tree.canFlower());
+        }
+
+        async function moveAnimate() {
+            tree.snapshot("p1", 240, 0, 610, 680);
+            while (tree.move("p1", 500, 0)) {
+                foot.draw();
+                await sleep(10);
+            }
+            foot.draw();
+            tree.snapshot("p2", 500, 0, 610, 680);
+            canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+            canvas.css("background", "linear-gradient(135deg, #ffe6e6, #ffd6e0, #fff0f5);");
+            await sleep(300);
+            canvas.css("background", "none");
+        }
+
+        async function jumpAnimate() {
+            while (true) {
+                tree.ctx.clearRect(0, 0, width, height);
+                tree.jump();
+                foot.draw();
+                await sleep(25);
+            }
+        }
+
+async function textAnimate() {
+    var together = new Date(config.date);
+    $("#code").show().typewriter(function () {
+        // ✅ Create styled button
+        let btn = document.createElement("button");
+        btn.textContent = "My Love 💕";
+        btn.className = "love-btn";
+        btn.onclick = function() {
+        window.location.href = "timeline.html"; // link to page 2
+    };
+        document.querySelector("#code").appendChild(btn);
+    });
+
+    while (true) {
+        timeElapse(together);
+        await sleep(1000);
+    }
+}
+
+        async function runAsync() {
+            await seedAnimate();
+            await growAnimate();
+            await flowAnimate();
+            await moveAnimate();
+            textAnimate();
+            await jumpAnimate();
+        }
+
+        runAsync();
+    });
+    </script>
+</body>
+</html>
